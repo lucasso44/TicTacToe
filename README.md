@@ -1,2 +1,2 @@
 # TicTacToe
-Play TicTacToe against Carol or another player
+Play TicTacToe against Carol or another player. Written in Java / Swing
