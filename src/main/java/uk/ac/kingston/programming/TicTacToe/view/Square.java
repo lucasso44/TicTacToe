@@ -21,9 +21,11 @@ public final class Square extends JPanel{
     
     private final JLabel label;
     private boolean playerSet = false;
-    
-    public Square() {
+    private int id = 0;
+    public Square(int id) {
         super();
+        
+        this.id = id;
         
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setBackground(new Color(36,43,69));
@@ -44,6 +46,7 @@ public final class Square extends JPanel{
         label.setForeground(player.equals("X") ? new Color(27,188,155) : new Color(226,80,67));
         label.setText(player);
         setPlayerSet(true);
+        updateUI();
     }
     
     public String getPlayer(){
@@ -62,5 +65,12 @@ public final class Square extends JPanel{
      */
     public void setPlayerSet(boolean playerSet) {
         this.playerSet = playerSet;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
     }
 }

@@ -84,4 +84,9 @@ public class SquareMetric {
     public Square getSquare() {
         return square;
     }
+    
+    @Override
+    public String toString() {
+        return getSquare().getId() + " O:" + isCanWinO() + "/" + getNumberOfMovesO() + " X: " + isCanWinX() + "/" + getNumberOfMovesX();
+    }
 }

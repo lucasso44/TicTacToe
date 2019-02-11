@@ -56,7 +56,7 @@ public final class Board extends JPanel{
         
         for(int x = 1; x <=4; x++) {
             for(int y = 1; y <= 4; y++) {
-                Square square = new Square();
+                Square square = new Square(squares.size()+1);
                 squares.add(square);
                 square.addMouseListener(new MouseListener() {
                     @Override
@@ -124,11 +124,15 @@ public final class Board extends JPanel{
         
         ArrayList<SquareMetric> squareMetrics = new ArrayList<>();
         
+        System.out.println(player);
+        
         freeSquares.forEach((freeSquare) -> {
             for(Square[] squareCheck : squareChecks) {
                 for(Square potentialSquare : squareCheck) {
                     if(potentialSquare.equals(freeSquare)) {
-                        squareMetrics.add(getSquareMetric(freeSquare, squareCheck));
+                        SquareMetric squareMetric = getSquareMetric(freeSquare, squareCheck);
+                        System.out.println(squareMetric.toString());
+                        squareMetrics.add(squareMetric);
                     }
                 }
             }
@@ -141,30 +145,48 @@ public final class Board extends JPanel{
                 if(squareMetric.isCanWinO() && squareMetric.getNumberOfMovesO() == 1) {
                     return squareMetric.getSquare();
                 } 
-               
-                if(!isEasyMode()) {
+            }
+            
+            if(!isEasyMode()) {
+                for(SquareMetric squareMetric : squareMetrics) {               
                     if(squareMetric.isCanWinX() && squareMetric.getNumberOfMovesX() == 1) {
                         return squareMetric.getSquare();
                     }
-                    else if(squareMetric.isCanWinX() && squareMetric.getNumberOfMovesX() == 2) {
+                }                
+                for(SquareMetric squareMetric : squareMetrics) {
+                    if(squareMetric.isCanWinX() && squareMetric.getNumberOfMovesX() == 2) {
                         return squareMetric.getSquare();
                     }
-                }
-                
+                }                            
+            }
+
+            for(SquareMetric squareMetric : squareMetrics) {
                 if(bestSquareMetric.getNumberOfMovesO() > squareMetric.getNumberOfMovesO()) {
                     bestSquareMetric = squareMetric;
                 }
-            }
+            }                                       
         }
         else {
-            for(SquareMetric squareMetric : squareMetrics) {
+           for(SquareMetric squareMetric : squareMetrics) {
                 if(squareMetric.isCanWinX() && squareMetric.getNumberOfMovesX() == 1) {
                     return squareMetric.getSquare();
-                } else if(squareMetric.isCanWinO() && squareMetric.getNumberOfMovesO() == 1) {
-                    return squareMetric.getSquare();
-                } else if(squareMetric.isCanWinO() && squareMetric.getNumberOfMovesO() == 2) {
-                    return squareMetric.getSquare();
-                }
+                } 
+            }
+            
+            if(!isEasyMode()) {
+                for(SquareMetric squareMetric : squareMetrics) {               
+                    if(squareMetric.isCanWinO() && squareMetric.getNumberOfMovesO() == 1) {
+                        return squareMetric.getSquare();
+                    }
+                }                
+                for(SquareMetric squareMetric : squareMetrics) {
+                    if(squareMetric.isCanWinO() && squareMetric.getNumberOfMovesO() == 2) {
+                        return squareMetric.getSquare();
+                    }
+                }                            
+            }
+
+            for(SquareMetric squareMetric : squareMetrics) {
                 if(bestSquareMetric.getNumberOfMovesX() > squareMetric.getNumberOfMovesX()) {
                     bestSquareMetric = squareMetric;
                 }
@@ -198,7 +220,9 @@ public final class Board extends JPanel{
         }
         else if(squaresFilledO > 0 && squaresFilledX > 0) {
             squareMetric.setCanWinO(false);
-            squareMetric.setCanWinX(false);            
+            squareMetric.setNumberOfMovesO(4 - squaresFilledO);
+            squareMetric.setCanWinX(false); 
+            squareMetric.setNumberOfMovesX(4 - squaresFilledX);
         }
         
         return squareMetric;
