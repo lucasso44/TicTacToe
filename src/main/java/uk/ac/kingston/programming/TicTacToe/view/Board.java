@@ -13,10 +13,10 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import uk.ac.kingston.programming.TicTacToe.controller.BoardListener;
 import uk.ac.kingston.programming.TicTacToe.model.Score;
@@ -32,8 +32,11 @@ public final class Board extends JPanel{
     private boolean playCarol = true;
     private boolean playerAssist = false;
     private boolean easyMode = false;
+    private boolean normalSize = false;
     
     private String currentPlayer = "O";
+    
+    private int numberOfSquares = 0;
     
     ArrayList<Square> squares = new ArrayList<>();
     
@@ -46,7 +49,10 @@ public final class Board extends JPanel{
         
         removeAll();
         
-        setLayout(new GridLayout(4,4));
+        numberOfSquares = isNormalSize() ? 3 : 4;
+        
+        setLayout(new GridLayout(numberOfSquares, numberOfSquares));
+        
         setBackground(Color.WHITE);       
         setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         
@@ -54,9 +60,10 @@ public final class Board extends JPanel{
         
         squares = new ArrayList<>();
         
-        for(int x = 1; x <=4; x++) {
-            for(int y = 1; y <= 4; y++) {
-                Square square = new Square(squares.size()+1);
+        
+        for(int x = 1; x <= numberOfSquares; x++) {
+            for(int y = 1; y <= numberOfSquares; y++) {
+                Square square = new Square(isNormalSize(), squares.size()+1);
                 squares.add(square);
                 square.addMouseListener(new MouseListener() {
                     @Override
@@ -103,6 +110,34 @@ public final class Board extends JPanel{
         updateUI();
     }
 
+    public Square[][] getSquareChecks() {
+        if(isNormalSize()) {
+            Square[][] squareChecks = new Square[8][3];	 	       	   	      	       			
+            squareChecks[0] = new Square[] {squares.get(0), squares.get(1), squares.get(2)};
+            squareChecks[1] = new Square[]{squares.get(3), squares.get(4), squares.get(5)};
+            squareChecks[2] = new Square[]{squares.get(6), squares.get(7), squares.get(8)};
+            squareChecks[3] = new Square[] {squares.get(0), squares.get(3), squares.get(6)};
+            squareChecks[4] = new Square[] {squares.get(1), squares.get(4), squares.get(7)};
+            squareChecks[5] = new Square[] {squares.get(2), squares.get(5), squares.get(8)};
+            squareChecks[6] = new Square[] {squares.get(0), squares.get(4), squares.get(8)};
+            squareChecks[7] = new Square[] {squares.get(2), squares.get(4), squares.get(6)};
+            return squareChecks;
+        } else {
+            Square[][] squareChecks = new Square[10][4];	 	       	   	      	       			
+            squareChecks[0] = new Square[] {squares.get(0), squares.get(1), squares.get(2), squares.get(3)};
+            squareChecks[1] = new Square[] {squares.get(4), squares.get(5), squares.get(6), squares.get(7)};
+            squareChecks[2] = new Square[] {squares.get(8), squares.get(9), squares.get(10), squares.get(11)};
+            squareChecks[3] = new Square[] {squares.get(12), squares.get(13), squares.get(14), squares.get(15)};
+            squareChecks[4] = new Square[] {squares.get(0), squares.get(4), squares.get(8), squares.get(12)};
+            squareChecks[5] = new Square[] {squares.get(1), squares.get(5), squares.get(9), squares.get(13)};
+            squareChecks[6] = new Square[] {squares.get(2), squares.get(6), squares.get(10), squares.get(14)};
+            squareChecks[7] = new Square[] {squares.get(3), squares.get(7), squares.get(11), squares.get(15)};
+            squareChecks[8] = new Square[] {squares.get(0), squares.get(5), squares.get(10), squares.get(15)};
+            squareChecks[9] = new Square[] {squares.get(3), squares.get(6), squares.get(9), squares.get(12)};            
+            return squareChecks;
+        }
+    }
+    
     public Square pickBestSquareToWin(String player) {
         
         ArrayList<Square> freeSquares = new ArrayList<>();
@@ -110,17 +145,7 @@ public final class Board extends JPanel{
             freeSquares.add(square);
         });
         
-        Square[][] squareChecks = new Square[10][4];	 	       	   	      	       			
-        squareChecks[0] = new Square[] {squares.get(0), squares.get(1), squares.get(2), squares.get(3)};
-        squareChecks[1] = new Square[] {squares.get(4), squares.get(5), squares.get(6), squares.get(7)};
-        squareChecks[2] = new Square[] {squares.get(8), squares.get(9), squares.get(10), squares.get(11)};
-        squareChecks[3] = new Square[] {squares.get(12), squares.get(13), squares.get(14), squares.get(15)};
-        squareChecks[4] = new Square[] {squares.get(0), squares.get(4), squares.get(8), squares.get(12)};
-        squareChecks[5] = new Square[] {squares.get(1), squares.get(5), squares.get(9), squares.get(13)};
-        squareChecks[6] = new Square[] {squares.get(2), squares.get(6), squares.get(10), squares.get(14)};
-        squareChecks[7] = new Square[] {squares.get(3), squares.get(7), squares.get(11), squares.get(15)};
-        squareChecks[8] = new Square[] {squares.get(0), squares.get(5), squares.get(10), squares.get(15)};
-        squareChecks[9] = new Square[] {squares.get(3), squares.get(6), squares.get(9), squares.get(12)};
+        Square[][] squareChecks = getSquareChecks();
         
         ArrayList<SquareMetric> squareMetrics = new ArrayList<>();
         
@@ -152,12 +177,14 @@ public final class Board extends JPanel{
                     if(squareMetric.isCanWinX() && squareMetric.getNumberOfMovesX() == 1) {
                         return squareMetric.getSquare();
                     }
-                }                
-                for(SquareMetric squareMetric : squareMetrics) {
-                    if(squareMetric.isCanWinX() && squareMetric.getNumberOfMovesX() == 2) {
-                        return squareMetric.getSquare();
-                    }
-                }                            
+                }    
+                if(!isNormalSize()) {
+                    for(SquareMetric squareMetric : squareMetrics) {
+                        if(squareMetric.isCanWinX() && squareMetric.getNumberOfMovesX() == 2) {
+                            return squareMetric.getSquare();
+                        }
+                    }                    
+                }
             }
 
             for(SquareMetric squareMetric : squareMetrics) {
@@ -178,12 +205,14 @@ public final class Board extends JPanel{
                     if(squareMetric.isCanWinO() && squareMetric.getNumberOfMovesO() == 1) {
                         return squareMetric.getSquare();
                     }
-                }                
-                for(SquareMetric squareMetric : squareMetrics) {
-                    if(squareMetric.isCanWinO() && squareMetric.getNumberOfMovesO() == 2) {
-                        return squareMetric.getSquare();
-                    }
-                }                            
+                }   
+                if(!isNormalSize()) {
+                    for(SquareMetric squareMetric : squareMetrics) {
+                        if(squareMetric.isCanWinO() && squareMetric.getNumberOfMovesO() == 2) {
+                            return squareMetric.getSquare();
+                        }
+                    }                    
+                }
             }
 
             for(SquareMetric squareMetric : squareMetrics) {
@@ -204,25 +233,25 @@ public final class Board extends JPanel{
         
         if(squaresFilledO > 0 && squaresFilledX == 0) {
             squareMetric.setCanWinO(true);
-            squareMetric.setNumberOfMovesO(4 - squaresFilledO);
+            squareMetric.setNumberOfMovesO(numberOfSquares - squaresFilledO);
             squareMetric.setCanWinX(false);
         }
         else if(squaresFilledO == 0 && squaresFilledX > 0) {
             squareMetric.setCanWinO(false);
             squareMetric.setCanWinX(true);            
-            squareMetric.setNumberOfMovesX(4 - squaresFilledX);
+            squareMetric.setNumberOfMovesX(numberOfSquares - squaresFilledX);
         }
         else if(squaresFilledO == 0 && squaresFilledX == 0) {
             squareMetric.setCanWinO(false);
-            squareMetric.setNumberOfMovesO(4);
+            squareMetric.setNumberOfMovesO(numberOfSquares);
             squareMetric.setCanWinX(true);            
-            squareMetric.setNumberOfMovesX(4);            
+            squareMetric.setNumberOfMovesX(numberOfSquares);            
         }
         else if(squaresFilledO > 0 && squaresFilledX > 0) {
             squareMetric.setCanWinO(false);
-            squareMetric.setNumberOfMovesO(4 - squaresFilledO);
+            squareMetric.setNumberOfMovesO(numberOfSquares - squaresFilledO);
             squareMetric.setCanWinX(false); 
-            squareMetric.setNumberOfMovesX(4 - squaresFilledX);
+            squareMetric.setNumberOfMovesX(numberOfSquares - squaresFilledX);
         }
         
         return squareMetric;
@@ -240,23 +269,16 @@ public final class Board extends JPanel{
     
     public boolean checkForEndOfGame() {
 
-        Square[][] squareChecks = new Square[10][4];	 	       	   	      	       			
-        squareChecks[0] = new Square[] {squares.get(0), squares.get(1), squares.get(2), squares.get(3)};
-        squareChecks[1] = new Square[] {squares.get(4), squares.get(5), squares.get(6), squares.get(7)};
-        squareChecks[2] = new Square[] {squares.get(8), squares.get(9), squares.get(10), squares.get(11)};
-        squareChecks[3] = new Square[] {squares.get(12), squares.get(13), squares.get(14), squares.get(15)};
-        squareChecks[4] = new Square[] {squares.get(0), squares.get(4), squares.get(8), squares.get(12)};
-        squareChecks[5] = new Square[] {squares.get(1), squares.get(5), squares.get(9), squares.get(13)};
-        squareChecks[6] = new Square[] {squares.get(2), squares.get(6), squares.get(10), squares.get(14)};
-        squareChecks[7] = new Square[] {squares.get(3), squares.get(7), squares.get(11), squares.get(15)};
-        squareChecks[8] = new Square[] {squares.get(0), squares.get(5), squares.get(10), squares.get(15)};
-        squareChecks[9] = new Square[] {squares.get(3), squares.get(6), squares.get(9), squares.get(12)};
+        Square[][] squareChecks = getSquareChecks();
         
         String[] players = new String[] {"X", "O" };
         
         for(String player : players) {	 	       	   	      	       			
           for(Square[] squareCheck : squareChecks) {	 	       	   	      	       			
-            if(isWinningLine(squareCheck[0], squareCheck[1], squareCheck[2], squareCheck[3], player)) {	 	       	   	      	       			
+            boolean winningLine = isNormalSize() ? 
+                    isWinningLine(squareCheck[0], squareCheck[1], squareCheck[2], player) : 
+                    isWinningLine(squareCheck[0], squareCheck[1], squareCheck[2], squareCheck[3], player);
+            if(winningLine) {	 	       	   	      	       			
               for(Square square : squareCheck) {
                   square.setBackground(new Color(197,202,233));
               }
@@ -285,6 +307,10 @@ public final class Board extends JPanel{
         return false;
     }
     
+    private boolean isWinningLine(Square s1, Square s2, Square s3, String player) {	 	       	   	      	       			
+        return (isMatch(s1, player) && isMatch(s2, player) && isMatch(s3, player));	 	       	   	      	       			
+    }   
+    
     private boolean isWinningLine(Square s1, Square s2, Square s3, Square s4, String player) {	 	       	   	      	       			
         return (isMatch(s1, player) && isMatch(s2, player) && isMatch(s3, player) && isMatch(s4, player));	 	       	   	      	       			
     }    
@@ -301,7 +327,7 @@ public final class Board extends JPanel{
     }
 
     private void drawWinner(String player) {
-        
+
         removeAll();
         
         MouseListener mouseListener = new MouseListener() {
@@ -371,6 +397,7 @@ public final class Board extends JPanel{
         winnerLabel.setFont(new Font("Sergio UI", Font.BOLD, 72));
         winnerLabel.setForeground(Color.WHITE);
         
+        
         winnerPanel.add(winnerLabel);
         
         add(winnerPanel);
@@ -422,5 +449,19 @@ public final class Board extends JPanel{
      */
     public void setEasyMode(boolean easyMode) {
         this.easyMode = easyMode;
+    }
+
+    /**
+     * @return the normalSize
+     */
+    public boolean isNormalSize() {
+        return normalSize;
+    }
+
+    /**
+     * @param normalSize the normalSize to set
+     */
+    public void setNormalSize(boolean normalSize) {
+        this.normalSize = normalSize;
     }
 }

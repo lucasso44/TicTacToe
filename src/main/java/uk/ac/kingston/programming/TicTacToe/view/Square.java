@@ -22,19 +22,28 @@ public final class Square extends JPanel{
     private final JLabel label;
     private boolean playerSet = false;
     private int id = 0;
-    public Square(int id) {
+    public Square(boolean isNormalSize, int id) {
         super();
         
         this.id = id;
         
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setBackground(new Color(36,43,69));
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 1, false), BorderFactory.createEmptyBorder(20, 20, 20, 20)));
-        
-        setPreferredSize(new Dimension(120, 120));
         
         label = new JLabel();
-        label.setFont(new Font("Sergio UI", Font.BOLD, 52));
+        
+        if(isNormalSize) {
+            setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 1, false), BorderFactory.createEmptyBorder(30, 30, 30, 30)));
+            setPreferredSize(new Dimension(160, 160));
+            label.setFont(new Font("Sergio UI", Font.BOLD, 62));
+        }
+        else {
+            setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 1, false), BorderFactory.createEmptyBorder(20, 20, 20, 20)));
+            setPreferredSize(new Dimension(120, 120));
+            label.setFont(new Font("Sergio UI", Font.BOLD, 52));            
+        }
+        
+        
         add(label);
     }
     

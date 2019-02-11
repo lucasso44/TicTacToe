@@ -89,6 +89,15 @@ public final class AppFrame extends JFrame {
         playerAssistCheckBox.setSelected(board.isPlayerAssist());
         
         optionPanel.add(playerAssistCheckBox);
+
+        JCheckBox normalSizeCheckBox = new JCheckBox("4 x 4");
+        normalSizeCheckBox.addActionListener((ActionEvent e) -> {
+            board.setNormalSize(!normalSizeCheckBox.isSelected());
+            board.redraw();
+        });
+        normalSizeCheckBox.setSelected(!board.isNormalSize());
+        
+        optionPanel.add(normalSizeCheckBox);
         
         restartButton = new JButton("Restart Game");
         restartButton.setForeground(new Color(36,43,69));
