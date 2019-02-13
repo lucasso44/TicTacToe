@@ -23,13 +23,13 @@ import uk.ac.kingston.programming.TicTacToe.model.Score;
  *
  * @author lucas
  */
-public final class AppFrame extends JFrame {
+public final class AppView extends JFrame {
     
     private JLabel scoreLabel;
     
-    private JButton restartButton;
+    private final JButton restartButton;
     
-    public AppFrame() {
+    public AppView() {
         
         setLayout(new BorderLayout());
         

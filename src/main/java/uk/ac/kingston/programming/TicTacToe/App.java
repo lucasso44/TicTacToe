@@ -7,7 +7,7 @@ package uk.ac.kingston.programming.TicTacToe;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import uk.ac.kingston.programming.TicTacToe.view.AppFrame;
+import uk.ac.kingston.programming.TicTacToe.view.AppView;
 
 /**
  *
@@ -16,7 +16,7 @@ import uk.ac.kingston.programming.TicTacToe.view.AppFrame;
 public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            AppFrame appFrame = new AppFrame();
+            AppView appFrame = new AppView();
             appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             appFrame.pack();
             appFrame.setLocationRelativeTo(null);
